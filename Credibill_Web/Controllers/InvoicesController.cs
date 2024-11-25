@@ -48,7 +48,7 @@ namespace Credibill_Web.Controllers
         // GET: Invoices/Create
         public IActionResult Create()
         {
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id");
+            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Name");
             return View();
         }
 
@@ -82,13 +82,18 @@ namespace Credibill_Web.Controllers
             {
                 return NotFound();
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", invoice.CustomerId);
+
+            // Remplir le ViewBag avec les clients et pré-sélectionner celui de la facture
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", invoice.CustomerId);
+
             return View(invoice);
         }
+
 
         // POST: Invoices/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Amount,InvoiceDate,Deleted,CustomerId")] Invoice invoice)
@@ -118,7 +123,8 @@ namespace Credibill_Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CustomerId"] = new SelectList(_context.Customers, "Id", "Id", invoice.CustomerId);
+            // Remplir le ViewBag avec la liste des clients au cas où la validation échoue
+            ViewBag.CustomerId = new SelectList(_context.Customers, "Id", "Name", invoice.CustomerId);
             return View(invoice);
         }
 
@@ -149,12 +155,15 @@ namespace Credibill_Web.Controllers
             var invoice = await _context.Invoices.FindAsync(id);
             if (invoice != null)
             {
-                _context.Invoices.Remove(invoice);
+                // Marquer la facture comme supprimée en mettant à jour la propriété 'Deleted'
+                invoice.Deleted = DateTime.Now;
+                _context.Update(invoice);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool InvoiceExists(int id)
         {

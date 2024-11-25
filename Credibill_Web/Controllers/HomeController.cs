@@ -18,6 +18,21 @@ namespace Credibill_Web.Controllers
             return View();
         }
 
+        public IActionResult Customer()
+        {
+            return RedirectToAction("Index", "Customers");
+        }
+
+        public IActionResult Invoice()
+        {
+            return RedirectToAction("Index", "Invoices");
+        }
+
+        public IActionResult Payment()
+        {
+            return RedirectToAction("Index", "Payments");
+        }
+
         public IActionResult Privacy()
         {
             return View();

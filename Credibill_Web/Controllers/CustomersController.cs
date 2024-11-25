@@ -19,6 +19,7 @@ namespace Credibill_Web.Controllers
             _context = context;
         }
 
+
         // GET: Customers
         public async Task<IActionResult> Index()
         {

@@ -3,6 +3,12 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
+    <h1 class="display-4">Welcome to Credibill Web</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+    <div class="mt-4">
+        <a class="btn btn-primary" href="@Url.Action("Customer", "Home")">Manage Customers</a>
+        <a class="btn btn-primary" href="@Url.Action("Invoice", "Home")">Manage Invoices</a>
+        <a class="btn btn-primary" href="@Url.Action("Payment", "Home")">Manage Payments</a>
+    </div>
 </div>

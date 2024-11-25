@@ -5,45 +5,39 @@ namespace CrediBill_Web.Data
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<Customer> Customers { get; set; }
-        public DbSet<Invoice> Invoices { get; set; }
-        public DbSet<Payment> Payments { get; set; }
-
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
         }
+
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Payment> Payments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configurations des relations entre les modèles
+            // Configuration des types de données pour éviter les warnings de validation
+            modelBuilder.Entity<Invoice>()
+                .Property(i => i.Amount)
+                .HasColumnType("decimal(18,2)"); // Spécifie le type SQL pour le montant
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(18,2)"); // Spécifie le type SQL pour le montant
+
+            // Configuration des relations entre les entités
             modelBuilder.Entity<Customer>()
                 .HasMany(c => c.Invoices)
                 .WithOne(i => i.Customer)
-                .HasForeignKey(i => i.CustomerId);
+                .HasForeignKey(i => i.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade); // Suppression en cascade
 
             modelBuilder.Entity<Invoice>()
                 .HasMany(i => i.Payments)
                 .WithOne(p => p.Invoice)
-                .HasForeignKey(p => p.InvoiceId);
-
-            // Configurer la suppression logique
-            modelBuilder.Entity<Customer>()
-                .HasQueryFilter(c => c.Deleted == DateTime.MaxValue);
-            modelBuilder.Entity<Invoice>()
-                .HasQueryFilter(i => i.Deleted == DateTime.MaxValue);
-            modelBuilder.Entity<Payment>()
-                .HasQueryFilter(p => p.Deleted == DateTime.MaxValue);
-
-            // Configuration des décimaux
-            modelBuilder.Entity<Invoice>()
-                .Property(i => i.Amount)
-                .HasPrecision(18, 2); // Précision totale: 18, après la virgule: 2
-
-            modelBuilder.Entity<Payment>()
-                .Property(p => p.Amount)
-                .HasPrecision(18, 2);
+                .HasForeignKey(p => p.InvoiceId)
+                .OnDelete(DeleteBehavior.Cascade); // Suppression en cascade
         }
     }
 }
