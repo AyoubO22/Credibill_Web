@@ -12,7 +12,6 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -38,6 +37,22 @@
                 <input asp-for="Deleted" class="form-control" />
                 <span asp-validation-for="Deleted" class="text-danger"></span>
             </div>
+
+            <!-- Sélectionner les factures liées -->
+            <div class="form-group">
+                <label for="Invoices">Invoices</label>
+                <select asp-for="Invoices" class="form-control" multiple="multiple">
+                    @foreach (var invoice in ViewBag.AllInvoices as List<CrediBill_Web.Models.Invoice>)
+                    {
+                        <option value="@invoice.Id" 
+                                @(Model.Invoices.Contains(invoice) ? "selected" : "")>
+                            @invoice.Amount - @invoice.InvoiceDate
+                        </option>
+                    }
+                </select>
+                <span asp-validation-for="Invoices" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
